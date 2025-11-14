@@ -1,0 +1,97 @@
+/* assets/css/styles.css */
+
+/* ================= Inputs & Buttons ================= */
+.input{
+  width:100%;
+  padding:.65rem .8rem;
+  border:1px solid #e2e8f0;
+  border-radius:.8rem;
+  background:#fff;
+  outline:0;
+}
+.input:focus{border-color:#334155;box-shadow:0 0 0 3px rgba(51,65,85,.1)}
+
+.input-xs{ /* dipakai di keranjang */
+  padding:.35rem .55rem;
+  font-size:.875rem;
+  border-radius:.6rem;
+  width:84px;
+}
+
+.btn-primary{background:#0f172a;color:#fff;padding:.6rem .9rem;border-radius:.8rem}
+.btn-secondary{background:#e2e8f0;color:#0f172a;padding:.6rem .9rem;border-radius:.8rem}
+.btn-danger{background:#ef4444;color:#fff;padding:.6rem .9rem;border-radius:.8rem}
+.btn-sm{padding:.35rem .6rem;border-radius:.6rem;font-size:.875rem}
+.btn-xs{padding:.3rem .55rem;border-radius:.55rem;font-size:.8rem;line-height:1}
+
+.badge{background:#fee2e2;color:#991b1b;padding:.2rem .5rem;border-radius:999px;font-size:.75rem}
+
+/* ================= Cards & Tables ================= */
+.card{background:#fff;border-radius:1rem;box-shadow:0 8px 20px rgba(2,6,23,.06)}
+.card-header{border-bottom:1px solid #e2e8f0;padding:1rem 1rem .75rem 1rem}
+.card-title{font-weight:700;color:#0f172a}
+.card-subtitle{font-size:.9rem;color:#64748b}
+
+.table{width:100%;border-collapse:separate;border-spacing:0}
+.table th,.table td{padding:.65rem .8rem;border-bottom:1px solid #e2e8f0;text-align:left}
+/* sticky header tabel belakang — pastikan z-index rendah agar modal menang */
+.table thead th{position:sticky;top:0;background:#f8fafc;z-index:1 !important}
+
+.stat{background:#f8fafc;border:1px solid #e2e8f0;border-radius:1rem;padding:1rem}
+
+/* ================= Sidebar nav ================= */
+.nav-item{width:100%;text-align:left;padding:.6rem .8rem;border-radius:.8rem}
+.nav-item:hover{background:#f1f5f9}
+.nav-item.is-active{background:#0f172a;color:#fff}
+
+/* ================= Modal & Toast ================= */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(2,6,23,.55);
+  display:grid;
+  place-items:center;
+  z-index:2147483640;            /* sangat tinggi, di atas elemen lain */
+  isolation:isolate;
+}
+.modal-card{
+  background:#fff;
+  border-radius:1rem;
+  max-width:520px;
+  width:100%;
+  box-shadow:0 20px 50px rgba(2,6,23,.4);
+  position:relative;
+  z-index:2147483647;            /* pastikan card di atas segalanya */
+  max-height:85vh;               /* jika konten tinggi, scroll di dalam modal */
+  overflow:auto;
+}
+.modal-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding:.8rem 1rem}
+.modal-title{font-weight:700}
+.modal-body{padding:1rem}
+.modal-footer{padding:1rem;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:.6rem}
+.modal-close{background:#e2e8f0;border-radius:.6rem;padding:.3rem .6rem}
+
+/* kunci scroll halaman belakang saat modal terbuka */
+body.modal-open{overflow:hidden}
+
+.toast{
+  position:fixed;right:1rem;bottom:1rem;
+  background:#0f172a;color:#fff;padding:.7rem 1rem;border-radius:.8rem;
+  box-shadow:0 8px 20px rgba(2,6,23,.2)
+}
+.loading{position:fixed;inset:0;background:rgba(255,255,255,.55);display:grid;place-items:center}
+.spinner{width:42px;height:42px;border-radius:999px;border:4px solid #0f172a;border-top-color:transparent;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.hidden{display:none}
+.label{display:block;font-size:.875rem;color:#475569;margin-bottom:.25rem}
+
+/* ================= Charts (Chart.js) ================= */
+.chart-wrap{
+  position:relative;
+  width:100%;
+  height:280px;                 /* tinggi default grafik */
+}
+@media (min-width:1024px){
+  .chart-wrap{height:320px;}
+}

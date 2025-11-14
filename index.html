@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login | A2R Kasir</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+  <div class="w-full max-w-md">
+    <div class="bg-white shadow-xl rounded-2xl p-6">
+      <h1 class="text-2xl font-bold text-slate-800 mb-1">A2R Kasir</h1>
+      <p class="text-slate-500 mb-6">Masuk untuk melanjutkan</p>
+
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-sm text-slate-600 mb-1">Email</label>
+          <input id="email" type="email" required placeholder="admin@a2r" class="input" />
+        </div>
+        <div>
+          <label class="block text-sm text-slate-600 mb-1">Password</label>
+          <input id="password" type="password" required placeholder="••••••" class="input" />
+        </div>
+        <button class="btn-primary w-full" type="submit">Masuk</button>
+      </form>
+
+      <div class="text-xs text-slate-500 mt-6">
+        <p class="font-semibold">Akun contoh:</p>
+        <ul class="list-disc ml-4">
+          <li>Admin Master: <code>admin@a2r</code> / <code>123456</code></li>
+          <li>Admin Biasa: <code>kasir@a2r</code> / <code>123456</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/auth.js"></script>
+</body>
+</html>

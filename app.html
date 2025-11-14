@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A2R Kasir – Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body class="min-h-screen bg-slate-100">
+  <header class="bg-white border-b sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto flex items-center justify-between p-3">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl bg-slate-900 text-white grid place-items-center font-bold">A2R</div>
+        <div>
+          <h1 class="font-bold text-slate-800">A2R Kasir</h1>
+          <p id="roleLabel" class="text-xs text-slate-500">Loading...</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="btnPrintLast" class="btn-secondary hidden">Cetak Struk Terakhir</button>
+        <button id="btnLogout" class="btn-danger">Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto p-4 grid md:grid-cols-12 gap-4">
+    <aside class="md:col-span-3 lg:col-span-2">
+      <nav class="bg-white rounded-2xl shadow p-2 space-y-1" id="sidebar">
+        <button data-target="#section-pay"   class="nav-item is-active">💳 Pembayaran</button>
+        <button data-target="#section-trans" class="nav-item">🧾 Struk & Transaksi</button>
+        <button data-target="#section-prod"  class="nav-item only-master">🔧 Produk</button>
+        <button data-target="#section-rep"   class="nav-item only-master">📊 Laporan</button>
+        <button data-target="#section-users" class="nav-item only-master">👥 Pengguna</button>
+      </nav>
+    </aside>
+
+    <section class="md:col-span-9 lg:col-span-10 space-y-4">
+      <!-- PEMBAYARAN -->
+      <div id="section-pay" class="card">
+        <div class="card-header">
+          <h2 class="card-title">Sistem Pembayaran</h2>
+          <p class="card-subtitle">Tambah ke keranjang dari katalog, pilih metode, dan proses transaksi.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4">
+          <!-- Katalog Produk -->
+          <div class="md:col-span-2">
+            <div class="flex items-center gap-2 mb-2">
+              <input id="catalogSearch" class="input" placeholder="Cari produk... (nama / ID)" />
+              <button id="btnCatalogReset" class="btn-secondary">Reset</button>
+            </div>
+
+            <div class="overflow-auto border rounded-xl" style="max-height: 260px">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="min-width:110px">ID</th>
+                    <th>Nama</th>
+                    <th>Harga</th>
+                    <th>Stok</th>
+                    <th style="width:120px"></th>
+                  </tr>
+                </thead>
+                <tbody id="catalogBody"></tbody>
+              </table>
+            </div>
+
+            <hr class="my-3"/>
+
+            <!-- Keranjang -->
+            <div class="flex items-center gap-2 mb-2">
+              <input id="searchProduct" class="input" placeholder="(Opsional) Tambah cepat via ketik nama/ID lalu Enter" />
+              <button id="btnAddById" class="btn-secondary">Tambah</button>
+            </div>
+            <div class="overflow-auto border rounded-xl" style="max-height: 220px">
+              <table class="table">
+                <thead>
+                  <tr><th>ID</th><th>Nama</th><th>Harga</th><th>Qty</th><th>Subtotal</th><th></th></tr>
+                </thead>
+                <tbody id="cartBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Ringkasan Pembayaran -->
+          <div>
+            <div class="bg-slate-50 border rounded-2xl p-3">
+              <div class="flex justify-between mb-2"><span>Total Item</span><strong id="sumItems">0</strong></div>
+              <div class="flex justify-between mb-2"><span>Total (Rp)</span><strong id="sumPrice">0</strong></div>
+              <div class="flex items-center gap-2 mt-3">
+                <select id="payMethod" class="input">
+                  <option value="cash">Tunai</option>
+                  <option value="qris">QRIS (Digital)</option>
+                </select>
+                <button id="btnPay" class="btn-primary flex-1">Bayar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STRUK & TRANSAKSI -->
+      <div id="section-trans" class="card hidden">
+        <div class="card-header">
+          <h2 class="card-title">Riwayat Transaksi</h2>
+          <p class="card-subtitle">Cari dan lihat detail per nomor transaksi.</p>
+        </div>
+        <div class="flex items-center gap-2 mb-2">
+          <input id="searchTxn" class="input" placeholder="Cari nomor transaksi" />
+          <button id="btnFindTxn" class="btn-secondary">Cari</button>
+        </div>
+        <div class="overflow-auto border rounded-xl" style="max-height:340px">
+          <table class="table">
+            <thead>
+              <tr><th>Waktu</th><th>No</th><th>Item</th><th>Total</th><th>Metode</th><th></th></tr>
+            </thead>
+            <tbody id="txnBody"><tr><td colspan="6">Belum ada transaksi.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PRODUK -->
+      <div id="section-prod" class="card hidden">
+        <div class="card-header">
+          <h2 class="card-title">Manajemen Produk</h2>
+          <p class="card-subtitle">Tambah, edit, kelola stok & pencarian real-time.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 mb-2">
+          <input id="prodSearch" class="input" placeholder="Cari produk..." />
+          <button id="btnNewProd" class="btn-primary">+ Produk</button>
+          <span id="lowStockBadge" class="badge hidden">Stok Rendah</span>
+        </div>
+        <div class="overflow-auto border rounded-xl" style="max-height:360px">
+          <table class="table">
+            <thead><tr><th>ID</th><th>Nama</th><th>Harga</th><th>Stok</th><th></th></tr></thead>
+            <tbody id="prodBody"><tr><td colspan="5">Tidak ada produk. Tambahkan produk baru.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- LAPORAN & ANALITIK – ADVANCED -->
+      <div id="section-rep" class="card hidden">
+        <div class="card-header">
+          <h2 class="card-title">Laporan & Analitik (Advanced)</h2>
+          <p class="card-subtitle">Filter tanggal, grafik tren, breakdown metode, & produk terlaris.</p>
+        </div>
+
+        <!-- Filter Tanggal -->
+        <div class="grid md:grid-cols-3 gap-3 p-3">
+          <div>
+            <label class="label">Dari Tanggal</label>
+            <input id="repFrom" type="date" class="input" />
+          </div>
+          <div>
+            <label class="label">Sampai Tanggal</label>
+            <input id="repTo" type="date" class="input" />
+          </div>
+          <div class="flex items-end gap-2 flex-wrap">
+            <button id="repApply" class="btn-primary">Terapkan</button>
+            <!-- Export CSV -->
+            <button id="repExportCsv" class="btn-secondary">Export CSV</button>
+            <button id="quickToday" class="btn-secondary">Hari Ini</button>
+            <button id="quick7" class="btn-secondary">7 Hari</button>
+            <button id="quick30" class="btn-secondary hidden md:inline-block">30 Hari</button>
+          </div>
+        </div>
+
+        <!-- Cards Ringkas -->
+        <div class="grid md:grid-cols-3 gap-3 px-3 pb-1">
+          <div class="stat"><span>Total Omzet</span><strong id="statTotal" class="block text-xl mt-1">Rp 0</strong></div>
+          <div class="stat"><span>Jumlah Transaksi</span><strong id="statCount" class="block text-xl mt-1">0</strong></div>
+          <div class="stat"><span>Produk Terlaris</span><strong id="statTop" class="block text-xl mt-1">-</strong></div>
+        </div>
+
+        <!-- Grafik -->
+        <div class="grid md:grid-cols-2 gap-4 p-3">
+          <div class="bg-white border rounded-2xl p-3">
+            <h3 class="font-semibold mb-2">Tren Penjualan</h3>
+            <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+          </div>
+          <div class="bg-white border rounded-2xl p-3">
+            <h3 class="font-semibold mb-2">Breakdown Metode Pembayaran</h3>
+            <div class="chart-wrap"><canvas id="methodChart"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Tabel Produk & Metode -->
+        <div class="grid md:grid-cols-2 gap-4 p-3">
+          <div class="bg-white border rounded-2xl p-3">
+            <h3 class="font-semibold mb-2">Top 10 Produk (Qty)</h3>
+            <div class="overflow-auto border rounded-xl" style="max-height: 260px">
+              <table class="table">
+                <thead><tr><th>ID</th><th>Nama</th><th>Qty</th><th>Total (Rp)</th></tr></thead>
+                <tbody id="topProductsBody"><tr><td colspan="4">Belum ada data</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="bg-white border rounded-2xl p-3">
+            <h3 class="font-semibold mb-2">Rangkuman Metode</h3>
+            <div class="overflow-auto border rounded-xl">
+              <table class="table">
+                <thead><tr><th>Metode</th><th>Jumlah</th><th>Total (Rp)</th></tr></thead>
+                <tbody id="methodSummaryBody"><tr><td colspan="3">Belum ada transaksi</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- PER KASIR -->
+        <div class="grid md:grid-cols-2 gap-4 p-3">
+          <div class="bg-white border rounded-2xl p-3">
+            <h3 class="font-semibold mb-2">Kontribusi per Kasir</h3>
+            <div class="overflow-auto border rounded-xl">
+              <table class="table">
+                <thead><tr><th>Kasir</th><th>Transaksi</th><th>Total (Rp)</th></tr></thead>
+                <tbody id="cashierSummaryBody"><tr><td colspan="3">Belum ada transaksi</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="bg-white border rounded-2xl p-3">
+            <h3 class="font-semibold mb-2">Grafik Omzet per Kasir</h3>
+            <div class="chart-wrap"><canvas id="cashierChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+      <!-- /LAPORAN ADVANCED -->
+
+      <!-- PENGGUNA -->
+      <div id="section-users" class="card hidden">
+        <div class="card-header">
+          <h2 class="card-title">Kelola Pengguna</h2>
+          <p class="card-subtitle">Tambah kasir (staff) dan admin (master).</p>
+        </div>
+
+        <div class="flex items-center gap-2 mb-2 px-3">
+          <button id="btnNewUser" class="btn-primary">+ Pengguna</button>
+        </div>
+
+        <div class="overflow-auto border rounded-xl mx-3 mb-3">
+          <table class="table">
+            <thead>
+              <tr><th>Nama</th><th>Email</th><th>Role</th><th></th></tr>
+            </thead>
+            <tbody id="userBody"><tr><td colspan="4">Belum ada data</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL PEMBAYARAN -->
+  <div id="payModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Konfirmasi Pembayaran</h3>
+        <button data-close class="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="space-y-2">
+          <div class="flex justify-between"><span>Total</span><strong id="mTotal">0</strong></div>
+          <div class="flex justify-between"><span>Metode</span><strong id="mMethod">-</strong></div>
+        </div>
+        <div id="cashArea" class="mt-4 hidden">
+          <label class="block text-sm text-slate-600 mb-1">Uang Tunai</label>
+          <input id="cashInput" class="input" type="number" placeholder="Masukkan nominal" />
+          <p class="text-sm mt-1">Kembalian: <strong id="changeLabel">0</strong></p>
+        </div>
+        <div id="qrisArea" class="mt-4 hidden">
+          <p class="text-sm text-slate-600 mb-2">Scan QRIS berikut untuk pembayaran:</p>
+          <div id="qrcode" class="grid place-items-center p-2 border rounded-xl"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button data-close class="btn-secondary">Batal</button>
+        <button id="btnConfirmPay" class="btn-primary">Konfirmasi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DETAIL TRANSAKSI (BARU) -->
+  <div id="detailModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Detail Transaksi</h3>
+        <button data-close class="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Diisi dinamis oleh assets/js/transactions.js -->
+      </div>
+      <div class="modal-footer">
+        <button data-close class="btn-secondary">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PRODUK -->
+  <div id="prodModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="prodModalTitle">Produk</h3>
+        <button data-close class="modal-close">✕</button>
+      </div>
+      <div class="modal-body grid gap-3">
+        <div>
+          <label class="label">ID Produk</label>
+          <input id="pId" class="input" placeholder="SPT-001" />
+        </div>
+        <div>
+          <label class="label">Nama</label>
+          <input id="pName" class="input" placeholder="Sepatu A2R Runner" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="label">Harga</label>
+            <input id="pPrice" type="number" class="input" placeholder="350000" />
+          </div>
+          <div>
+            <label class="label">Stok</label>
+            <input id="pStock" type="number" class="input" placeholder="20" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button data-close class="btn-secondary">Batal</button>
+        <button id="btnSaveProd" class="btn-primary">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PENGGUNA -->
+  <div id="userModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="userModalTitle">Pengguna</h3>
+        <button data-close class="modal-close">✕</button>
+      </div>
+      <div class="modal-body grid gap-3">
+        <div>
+          <label class="label">Nama</label>
+          <input id="uName" class="input" placeholder="Nama lengkap" />
+        </div>
+        <div>
+          <label class="label">Email</label>
+          <input id="uEmail" class="input" placeholder="user@a2r" />
+        </div>
+        <div>
+          <label class="label">Password</label>
+          <input id="uPass" type="password" class="input" placeholder="******" />
+        </div>
+        <div>
+          <label class="label">Role</label>
+          <select id="uRole" class="input">
+            <option value="staff">staff (kasir)</option>
+            <option value="master">master (admin)</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button data-close class="btn-secondary">Batal</button>
+        <button id="btnSaveUser" class="btn-primary">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast & Loading -->
+  <div id="toast" class="toast hidden"></div>
+  <div id="loading" class="loading hidden"><div class="spinner"></div></div>
+
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Core JS -->
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/products.js"></script>
+  <script src="assets/js/payments.js"></script>
+  <script src="assets/js/transactions.js"></script>
+
+  <!-- Laporan Advanced -->
+  <script src="assets/js/reports_advanced.js"></script>
+
+  <!-- Modul Kelola Pengguna -->
+  <script src="assets/js/users.js"></script>
+</body>
+</html>
